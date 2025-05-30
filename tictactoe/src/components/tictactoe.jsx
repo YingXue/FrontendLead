@@ -13,20 +13,32 @@ const calculateWinner = (cells) => {
 export const Tictactoe = () => {
     const [cells, setCells] = React.useState(Array(9).fill(null));
     const [isXNext, setIsXNext] = React.useState(true);
+    const [lock, setLock] = React.useState(false); // lock the game util reset
+
+    React.useEffect(() => {
+        const winner = calculateWinner(cells);
+        if (winner) {
+            setTimeout(() => {
+                alert(`Winner: ${winner}`);
+            },100);
+            setLock(true);
+        }
+    },[cells]);
 
     const handleClick = (index) => {
+        if (lock) return; // if the game is locked, do nothing
+        if (cells[index]) return; // if the cell is already filled, do nothing
+        
         const newCells = [...cells];
         newCells[index] = isXNext ? 'X' : 'O';
         setCells(newCells);
-        setIsXNext(!isXNext);
+        setIsXNext(!isXNext);    
+    }
 
-        const winner = calculateWinner(newCells);
-        console.log('Winner:', winner);
-        console.log('Current Cells:', newCells);
-        if (winner) {
-           alert(`Winner: ${winner}`);
-           return;
-        }
+    const resetBoard = () => {
+        setCells(Array(9).fill(null));
+        setIsXNext(true);
+        setLock(false); // unlock the game
     }
 
     return (
@@ -44,6 +56,7 @@ export const Tictactoe = () => {
                     >{cell}</div>
                  ))}
             </div>
+            <button onClick={resetBoard}>Reset</button>
         </div>
     );
 }
