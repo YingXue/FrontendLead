@@ -1,0 +1,22 @@
+.img-slider-img {
+    object-fit:cover;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+.img-slider-button {
+    all: unset;
+    cursor: pointer;
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    padding: 1rem;
+}
+
+.img-slider-button > * {
+    stroke: palegoldenrod;
+    fill: black;
+    width: 2rem;
+    height: 2rem;
+}
