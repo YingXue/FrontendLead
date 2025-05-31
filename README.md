@@ -3,6 +3,6 @@ npm create vite@latest my-react-app -- --template react <br/>
 npm run dev <br/>
 open codespace by picking the project from here: https://github.com/codespaces
 
-# Tic_Tac_Toe
+# Tic Tac Toe
 # Search API and render image
-
+# Image sliders carousel
