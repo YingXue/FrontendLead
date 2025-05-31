@@ -27,7 +27,16 @@ export const ImageSlider = () => {
 
     return (
         <div style={{width: '100%', height: '100%', position: 'relative'}}>
-            {<img src={images[imageIndex]} alt={'product image '} className="img-slider-img"/>}
+            <div style={{width: '100%', height: '100%', display: 'flex', overflow: 'hidden'}}>
+                {images.map((image, index) => 
+                    <img
+                        key={index}
+                        src={image}
+                        alt={'product image '}
+                        className="img-slider-img"
+                        style={{transform: `translateX(-${100 * imageIndex}%)`}}
+                    />)}
+            </div>
             <button className="img-slider-button" style={{left: 0}} onClick={showPre}><ArrowBigLeft/></button>
             <button className="img-slider-button"style={{right: 0}} onClick={showNext}><ArrowBigRight/></button>
         </div>
