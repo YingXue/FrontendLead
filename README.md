@@ -8,3 +8,4 @@ open codespace by picking the project from here: https://github.com/codespaces
 ### Search API and render image
 ### Image sliders carousel
 ### Tabs control
+### Auto complete

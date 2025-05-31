@@ -1,35 +1,29 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {AutoComplete} from './components/autoComplete'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div style={{display: 'flex', flexDirection:'column', width: '100%', height: '100vh', justifyContent: 'center', alignItems: 'center'}}>
+      <AutoComplete/>
+    </div>
   )
 }
 
 export default App
+
+// functional requirement:
+// a input box for user to start typing
+// the auto complete suggestions are rendered in a dropdown (most frequent or with infinite scroll)
+// user typing triggers backend api fetch to grab auto complete suggestions
+// when user select an entry from the suggestions (enter or mouse click), dropdown disappears and input box gets updated
+// input debounced
+
+// accessible:
+// arrow up down
+// esc to close dropdown
+// aria label
+// color contrast
+
+// nice to have:
+// highlighted the matching input to show relevance
+// api cancellation if new input appears
+// caching
