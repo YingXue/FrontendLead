@@ -1,31 +1,43 @@
-import React from "react"
+import React from "react";
 import {Product} from "./product";
 import './products.css'
+import { useDebounceValue } from "./debounce";
 export const Products = () => {
     const [products, setProducts] = React.useState([]);
     const [filteredProducts, setFilterProducts] = React.useState([]);
     const [selectedImage, setSelectedImage] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [filter, setFilter] = React.useState('');
+    const debouncedFilter = useDebounceValue(filter, 500);
 
     React.useEffect(() => {
         const fetchProducts = async () => {
-        setLoading(true);
-           const result = await fetch('https://dummyjson.com/products');
-           const {products} = await result.json();
-           console.log(products);
-           setLoading(false);
-           setProducts(products);
-           setFilterProducts(products);
-           setSelectedImage(products?.[0].images[0]);
+            try {
+                setLoading(true);
+                const result = await fetch('https://dummyjson.com/products');
+                const {products} = await result.json();
+                console.log(products);
+                setLoading(false);
+                setProducts(products);
+                setFilterProducts(products);
+                setSelectedImage(products?.[0].images[0]);
+            }
+            catch {
+                //some error handling
+            }
+            finally {
+                setLoading(false);
+            }
         }
-        try {
-            fetchProducts();
-        }
-        catch {
-            //some error handling
-        }
+        
+        fetchProducts();
+
     }, []); //fetch products
+
+    React.useEffect(() => {
+        const filtered = products.filter(product=>product.title.toLowerCase().includes(debouncedFilter.toLowerCase()));
+        setFilterProducts(filtered);
+    }, [debouncedFilter])
 
     const onSelectProduct = (product) => {
         setSelectedImage(product.images[0]);
@@ -33,8 +45,6 @@ export const Products = () => {
 
     const onInputChange = (e) => {
         setFilter(e.target.value);
-        const filtered = products.filter(product=>product.title.toLowerCase().includes(e.target.value.toLowerCase()));
-        setFilterProducts(filtered);
     }
 
     return (
