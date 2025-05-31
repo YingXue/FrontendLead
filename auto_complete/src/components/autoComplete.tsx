@@ -1,7 +1,7 @@
 import * as React from 'react';
 import './autoComplete.css'
 
-const useDebouncer = (value: any, delay: number) => {
+export const useDebouncer = (value: any, delay: number) => {
     const [debouncedValue, setDebouncedValue] = React.useState(value);
 
     React.useEffect(()=> {
@@ -13,56 +13,81 @@ const useDebouncer = (value: any, delay: number) => {
 
     return debouncedValue;
 }
+
+interface Suggestion {
+    id: string;
+    title: string;
+}
 export const AutoComplete:React.FC = () => {
     const [userInput, setUserInput] = React.useState('');
-    const [suggestions, setSuggestions] = React.useState([]);
-    const debouncedInput = useDebouncer(userInput, 500);
+    const [suggestions, setSuggestions] = React.useState<Suggestion[]>([]);
+    const [showResults, setShowResults] = React.useState(false);
+    const [cachedSuggestions, setCachedSuggestions] = React.useState<Record<string, Suggestion[]>>({});
 
-    React.useEffect(() => {
-        const fetchSuggestions = async () => {
-            if (debouncedInput) {
-                try{
-                    const response = await fetch(`https://dummyjson.com/products/search?q=${debouncedInput.toLocaleLowerCase()}`);
-                    const {products} = await response.json();
-                    const fetchedSuggestions = products.map((product: any) => product.title);
-
-                    // if suggestions has only one entry and it's exactly the same as the input, skip it
-                    if (!(fetchedSuggestions.length === 1 && fetchedSuggestions[0].toLowerCase() === debouncedInput.toLowerCase())) {
-                        setSuggestions(fetchedSuggestions);
-                    } else {
-                        setSuggestions([]);
-                    }
-                }
-                catch {
-                    // do some error handling
-                }
+    const fetchSuggestions = async () => {
+        // IMPROVEMENT: use cache
+        try {
+            if (cachedSuggestions[userInput]) {
+                // console.log('from cache');
+                setSuggestions(cachedSuggestions[userInput]);
             }
             else {
-                setSuggestions([]);
+                // console.log('from api')
+                const response = await fetch(`https://dummyjson.com/products/search?q=${userInput.toLocaleLowerCase()}`);
+                const {products} = await response.json();
+                setSuggestions(products);
+                setCachedSuggestions(prev => ({...prev, [userInput.toLowerCase()]: products}));
             }
         }
-        fetchSuggestions();
-    }, [debouncedInput]);
+        catch {
+            // do some error handling
+        }
+    }
+
+    React.useEffect(() => {
+        // IMPROVEMENT: simply debouncing without using the useDebounce hook
+        const timerId = setTimeout(()=> {
+            fetchSuggestions()},
+        500);
+
+        // The cleanup function is called:
+        // Before the effect runs again — i.e., when the dependency userInput changes.
+        // When the component unmounts — React will also run the cleanup when the component is being removed from the DOM.
+        return () => {
+            clearTimeout(timerId);
+        }
+
+    }, [userInput]);
 
     const onChangeInput = (e: any) => {
         setUserInput(e.target.value);
     }
 
-    const onSuggestionSelected = (suggestion:string) => {
-        setUserInput(suggestion);
+    const onSuggestionSelected = (suggestion: Suggestion) => {
+        console.log(suggestion);
+        setUserInput(suggestion.title);
         setSuggestions([]);
     }
 
     return (
         <>
-            <input type='text' value={userInput} onChange={onChangeInput} style={{width: 500}}/>
-            {!!suggestions && suggestions.length > 0 && 
+            <input
+                type='text'
+                value={userInput}
+                onChange={onChangeInput}
+                style={{width: 500}}
+                // IMPROVEMENT: only show results when focus
+                onFocus={()=> setShowResults(true)}
+                onBlur={() => setTimeout(() => setShowResults(false), 100)}
+            />
+            {showResults&& !!suggestions && suggestions.length > 0 && 
                 <div className='searchResults'>
-                {suggestions.map((suggestion, index) => 
-                    <div key={index} className='searchResult'>
-                    <button onClick={() => onSuggestionSelected(suggestion)}>{suggestion}</button>
-                    </div>
-                )}
+                    {suggestions.map((suggestion: Suggestion) => 
+                        <div key={suggestion.id} className='searchResult'>
+                            {/* IMPROVEMENT: the onBlur on input removes the suggestion list too soon. use onMonseDown instead which happens before onBlur*/}
+                            <button onMouseDown={() => onSuggestionSelected(suggestion)}>{suggestion.title}</button>
+                        </div>
+                    )}
                 </div>
             }
         </>
