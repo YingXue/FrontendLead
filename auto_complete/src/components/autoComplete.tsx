@@ -78,14 +78,13 @@ export const AutoComplete:React.FC = () => {
                 style={{width: 500}}
                 // IMPROVEMENT: only show results when focus
                 onFocus={()=> setShowResults(true)}
-                onBlur={() => setTimeout(() => setShowResults(false), 100)}
+                onBlur={() => setTimeout(() => setShowResults(false), 500)}
             />
             {showResults&& !!suggestions && suggestions.length > 0 && 
                 <div className='searchResults'>
                     {suggestions.map((suggestion: Suggestion) => 
                         <div key={suggestion.id} className='searchResult'>
-                            {/* IMPROVEMENT: the onBlur on input removes the suggestion list too soon. use onMonseDown instead which happens before onBlur*/}
-                            <button onMouseDown={() => onSuggestionSelected(suggestion)}>{suggestion.title}</button>
+                            <span onClick={() => onSuggestionSelected(suggestion)}>{suggestion.title}</span>
                         </div>
                     )}
                 </div>
