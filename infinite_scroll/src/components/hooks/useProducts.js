@@ -9,9 +9,9 @@ const fetchProducts = async (page = 1, limit = 10) => {
 
 export const useProducts = () => {
     const [products, setProducts] = useState([]);
-    const pageRef = useRef(1);
-    const observerRef = useRef(null);
-    const loadingRef = useRef(false);
+    const pageRef = useRef(1); // page ref instead of state to prevent re-render
+    const observerRef = useRef(null); // DOM ref
+    const loadingRef = useRef(false); //use as a lock
 
     /* Why It’s a useCallback
         1) The function instance stays stable.
