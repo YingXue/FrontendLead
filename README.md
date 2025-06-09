@@ -9,3 +9,4 @@ open codespace by picking the project from here: https://github.com/codespaces
 ### Image sliders carousel
 ### Tabs control
 ### Auto complete
+### Airbnb style grid with infinite scroll
